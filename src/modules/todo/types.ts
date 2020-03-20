@@ -9,8 +9,13 @@ export enum TodoActionType {
   UPDATE = "TODO/UPDATE"
 }
 
+interface NormalizedTodo {
+  [key: string]: Todo;
+}
+
 export interface State {
-  todos: Todo[];
+  todos: NormalizedTodo;
+  ids: string[];
 }
 
 export interface AddTodo {

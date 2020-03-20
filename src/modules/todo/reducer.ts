@@ -1,30 +1,44 @@
 import { State, TodoAction, TodoActionType } from "./types";
 import produce from "immer";
+import { combineReducers } from "redux";
 
 const initialState: State = {
-  todos: []
+  todos: {},
+  ids: []
 };
 
-const reducer = (state = initialState, action: TodoAction) =>
+const todos = (state = initialState.todos, action: TodoAction) =>
   produce(state, draft => {
     switch (action.type) {
       case TodoActionType.ADD:
-        draft.todos.push(action.payload.todo);
+        draft[action.payload.todo.id] = action.payload.todo;
         break;
+
       case TodoActionType.REMOVE:
-        draft.todos.splice(
-          draft.todos.findIndex(t => t.id === action.payload.id),
-          1
-        );
+        delete draft[action.payload.id];
         break;
-      case TodoActionType.UPDATE: {
-        const todoIndex = draft.todos.findIndex(
-          t => t.id === action.payload.id
-        );
-        draft.todos[todoIndex].body = action.payload.body;
+      case TodoActionType.UPDATE:
+        draft[action.payload.id].body = action.payload.body;
         break;
-      }
     }
   });
 
-export default reducer;
+const ids = (state = initialState.ids, action: TodoAction) =>
+  produce(state, draft => {
+    switch (action.type) {
+      case TodoActionType.ADD:
+        draft.push(action.payload.todo.id);
+        break;
+      case TodoActionType.REMOVE:
+        draft.splice(
+          draft.findIndex(id => id === action.payload.id),
+          1
+        );
+        break;
+    }
+  });
+
+export default combineReducers({
+  todos,
+  ids
+});

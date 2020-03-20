@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { AppState } from "./modules/types";
 import { Todo } from "./modules/todo/types";
 import { addTodo, removeTodo, updateTodo } from "./modules/todo/action";
+import { selectTodos } from "./modules/todo/selector";
 import produce from "immer";
 
 interface AppProps {}
@@ -25,6 +26,7 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
   };
   const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (todo === "") return;
     addTodo(todo);
     setTodo("");
   };
@@ -68,7 +70,6 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
   };
 
   const handleRemoveTodo = (id: string) => {
-    console.log("deleting", id);
     setIsEditing(s =>
       produce(s, draft => {
         delete draft[id];
@@ -126,7 +127,7 @@ interface LinkMapDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): LinkMapStateProps => ({
-  todos: state.todo.todos
+  todos: selectTodos(state)
 });
 
 const mapDispatchToProps: LinkMapDispatchProps = {
