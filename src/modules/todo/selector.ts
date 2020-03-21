@@ -1,5 +1,5 @@
 import { createSelector } from "reselect";
-import { AppState } from "../types";
+import { AppState } from "src/modules/types";
 
 const selectTodoDetail = (state: AppState) => state.todo.todos;
 const selectTodoIds = (state: AppState) => state.todo.ids;
