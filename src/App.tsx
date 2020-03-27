@@ -1,10 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
+import produce from "immer";
 import { AppState } from "./modules/types";
 import { Todo } from "./modules/todo/types";
 import { addTodo, removeTodo, updateTodo } from "./modules/todo/action";
 import { selectTodos } from "./modules/todo/selector";
-import produce from "immer";
 
 interface AppProps {}
 
@@ -20,7 +20,7 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
   }>({});
 
   const handleChange = ({
-    target: { value }
+    target: { value },
   }: React.ChangeEvent<HTMLInputElement>) => {
     setTodo(value);
   };
@@ -31,21 +31,21 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
     setTodo("");
   };
   const handleEdit = (id: string) => {
-    setIsEditing(s =>
-      produce(s, draft => {
+    setIsEditing((s) =>
+      produce(s, (draft) => {
         draft[id] = true;
       })
     );
     const todo = getTodo(id);
-    setTodoEditValues(v =>
-      produce(v, draft => {
+    setTodoEditValues((v) =>
+      produce(v, (draft) => {
         draft[id] = todo.body;
       })
     );
   };
 
   const getTodo = (id: string) => {
-    const todoIndex = todos.findIndex(t => t.id === id);
+    const todoIndex = todos.findIndex((t) => t.id === id);
     return todos[todoIndex];
   };
 
@@ -53,16 +53,16 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     e.persist();
-    setTodoEditValues(v =>
-      produce(v, draft => {
+    setTodoEditValues((v) =>
+      produce(v, (draft) => {
         draft[id] = e.target.value;
       })
     );
   };
 
   const handleUpdateTodo = (id: string) => {
-    setIsEditing(s =>
-      produce(s, draft => {
+    setIsEditing((s) =>
+      produce(s, (draft) => {
         draft[id] = false;
       })
     );
@@ -70,13 +70,13 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
   };
 
   const handleRemoveTodo = (id: string) => {
-    setIsEditing(s =>
-      produce(s, draft => {
+    setIsEditing((s) =>
+      produce(s, (draft) => {
         delete draft[id];
       })
     );
-    setTodoEditValues(v =>
-      produce(v, draft => {
+    setTodoEditValues((v) =>
+      produce(v, (draft) => {
         delete draft[id];
       })
     );
@@ -102,11 +102,15 @@ const App: React.FC<Props> = ({ todos, addTodo, removeTodo, updateTodo }) => {
                 value={todoEditValues[id] || ""}
                 onChange={handleEditTodo(id)}
               />
-              <button onClick={() => handleUpdateTodo(id)}>Update</button>
+              <button type="button" onClick={() => handleUpdateTodo(id)}>
+                Update
+              </button>
             </div>
           ) : (
             <div key={idx}>
-              <li onClick={() => handleEdit(id)}>{body}</li>
+              <li role="menuitem" onClick={() => handleEdit(id)}>
+                {body}
+              </li>
               <button onClick={() => handleRemoveTodo(id)}>Delete</button>
             </div>
           );
@@ -127,13 +131,13 @@ interface LinkMapDispatchProps {
 }
 
 const mapStateToProps = (state: AppState): LinkMapStateProps => ({
-  todos: selectTodos(state)
+  todos: selectTodos(state),
 });
 
 const mapDispatchToProps: LinkMapDispatchProps = {
   addTodo,
   removeTodo,
-  updateTodo
+  updateTodo,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
